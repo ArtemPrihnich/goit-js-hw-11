@@ -1,6 +1,8 @@
 import axios from "axios";
 import Notiflix from "notiflix";
 import "notiflix/dist/notiflix-3.2.5.min.css";
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 import { fetchImages } from "./search";
 
 const form = document.querySelector("form");
@@ -11,6 +13,7 @@ const loadMoreBtn = document.querySelector(".load-more")
 
 export let page = 1;
 let loadImagesCounter = 0;
+// let lightbox = null;
 
 form.addEventListener("submit", onFormSubmit);
 loadMoreBtn.addEventListener("click", onLoadMoreBtnClick);
@@ -24,13 +27,18 @@ async function onFormSubmit(e) {
 
     try {
         const imagesArray = await fetchImages(input.value);
-        const itemList = await createImageCard(imagesArray.data.hits);
-        const visibleBtn = loadMoreBtn.classList.add("is-visible");
-        loadImagesCounter += imagesArray.data.hits.length;
+      const itemList = await createImageCard(imagesArray.data.hits);
+      const gallery = await new SimpleLightbox('.photo-card a');
+      // const lightbox = await new SimpleLightbox('.test .gallery .photo-card a', { captionDelay: 250 });
+      console.log(gallery)
+      const visibleBtn = loadMoreBtn.classList.add("is-visible");
+      loadImagesCounter += imagesArray.data.hits.length;
 
         // console.log(imagesArray.data.hits.length)
         if (imagesArray.data.hits.length === 0) {
             return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+        } else {
+          Notiflix.Notify.success(`Hooray! We found ${imagesArray.data.totalHits} images.`);
         }
         return list.insertAdjacentHTML("beforeend", itemList);
     } catch (error) {
@@ -42,21 +50,21 @@ async function onFormSubmit(e) {
 function createImageCard(arr) {
     return arr.reduce((acc, { webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => acc + 
     `<div class="photo-card">
-  <img src="${webformatURL}" alt="${tags}" loading="lazy" width="300px"/>
+  <a class ="link" href ="${largeImageURL}"><img class="img" src="${webformatURL}" alt="${tags}" loading="lazy"/>
   <div class="info">
     <p class="info-item">
-      <b>Likes: ${likes}</b>
+      <b class ="test2">Likes: <span class ="info-text">${likes}</span></b>
     </p>
     <p class="info-item">
-      <b>Views: ${views}</b>
+      <b class ="test2">Views: <span class ="info-text">${views}</span></b>
     </p>
     <p class="info-item">
-      <b>Comments: ${comments}</b>
+      <b class ="test2">Comments: <span class ="info-text">${comments}</span></b>
     </p>
     <p class="info-item">
-      <b>Downloads: ${downloads}</b>
+      <b class ="test2">Downloads: <span class ="info-text">${downloads}</span></b>
     </p>
-  </div>
+  </div></a>
 </div>`, "")
 }
 
@@ -70,9 +78,7 @@ async function onLoadMoreBtnClick() {
     try {
         const imagesArray = await fetchImages(input.value);
         const itemList = await createImageCard(imagesArray.data.hits);
-        loadImagesCounter += imagesArray.data.hits.length;
-        console.log(imagesArray.data.totalHits)
-         console.log(loadImagesCounter)
+      loadImagesCounter += imagesArray.data.hits.length;
         if (loadImagesCounter >= imagesArray.data.totalHits) {
             loadMoreBtn.classList.remove("is-visible");
             Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
@@ -82,3 +88,18 @@ async function onLoadMoreBtnClick() {
         console.log(error);
     }
 }
+
+// let gallery = new SimpleLightbox('.photo-card a');
+// gallery.on('show.simplelightbox', function () {
+// 	// Do something…
+// });
+
+// function clickShveps (e) {
+//   e.preventDefault();
+
+//   // const gallery = await new SimpleLightbox('.photo-card a');
+//         gallery.on('show.simplelightbox', function () {
+// 	        // Do something…
+//           });
+// }
+// const lightbox = new SimpleLightbox('.test .gallery .photo-card a', { captionDelay: 250 });
