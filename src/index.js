@@ -18,6 +18,8 @@ let loadImagesCounter = 0;
 form.addEventListener("submit", onFormSubmit);
 loadMoreBtn.addEventListener("click", onLoadMoreBtnClick);
 
+let gallery = new SimpleLightbox('.gallery a');
+
 async function onFormSubmit(e) {
     e.preventDefault();
     page = 1;
@@ -28,9 +30,13 @@ async function onFormSubmit(e) {
     try {
         const imagesArray = await fetchImages(input.value);
       const itemList = await createImageCard(imagesArray.data.hits);
-      const gallery = await new SimpleLightbox('.photo-card a');
+      // const gallery = await new SimpleLightbox('.gallery a');
+      // console.log(await "1")
+      //  let gallery = await new SimpleLightbox('.test .gallery .photo-card a', { captionDelay: 250 });
+      // const lightbox = new SimpleLightbox('.photo-card a', {});
       // const lightbox = await new SimpleLightbox('.test .gallery .photo-card a', { captionDelay: 250 });
-      console.log(gallery)
+      // console.log(lightbox)
+      // console.log(2)
       const visibleBtn = loadMoreBtn.classList.add("is-visible");
       loadImagesCounter += imagesArray.data.hits.length;
 
@@ -50,7 +56,7 @@ async function onFormSubmit(e) {
 function createImageCard(arr) {
     return arr.reduce((acc, { webformatURL, largeImageURL, tags, likes, views, comments, downloads }) => acc + 
     `<div class="photo-card">
-  <a class ="link" href ="${largeImageURL}"><img class="img" src="${webformatURL}" alt="${tags}" loading="lazy"/>
+  <a class ="link" href ="${largeImageURL}"><img class="img" src="${webformatURL}" alt="${tags}" loading="lazy"/></a>
   <div class="info">
     <p class="info-item">
       <b class ="test2">Likes: <span class ="info-text">${likes}</span></b>
@@ -64,7 +70,7 @@ function createImageCard(arr) {
     <p class="info-item">
       <b class ="test2">Downloads: <span class ="info-text">${downloads}</span></b>
     </p>
-  </div></a>
+  </div>
 </div>`, "")
 }
 
@@ -77,7 +83,7 @@ async function onLoadMoreBtnClick() {
 
     try {
         const imagesArray = await fetchImages(input.value);
-        const itemList = await createImageCard(imagesArray.data.hits);
+      const itemList = await createImageCard(imagesArray.data.hits);
       loadImagesCounter += imagesArray.data.hits.length;
         if (loadImagesCounter >= imagesArray.data.totalHits) {
             loadMoreBtn.classList.remove("is-visible");
