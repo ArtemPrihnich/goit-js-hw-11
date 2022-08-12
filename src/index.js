@@ -13,12 +13,10 @@ const loadMoreBtn = document.querySelector(".load-more")
 
 export let page = 1;
 let loadImagesCounter = 0;
-// let lightbox = null;
+let gallery = null;
 
 form.addEventListener("submit", onFormSubmit);
 loadMoreBtn.addEventListener("click", onLoadMoreBtnClick);
-
-let gallery = new SimpleLightbox('.gallery a');
 
 async function onFormSubmit(e) {
     e.preventDefault();
@@ -30,27 +28,19 @@ async function onFormSubmit(e) {
     try {
         const imagesArray = await fetchImages(input.value);
       const itemList = await createImageCard(imagesArray.data.hits);
-      // const gallery = await new SimpleLightbox('.gallery a');
-      // console.log(await "1")
-      //  let gallery = await new SimpleLightbox('.test .gallery .photo-card a', { captionDelay: 250 });
-      // const lightbox = new SimpleLightbox('.photo-card a', {});
-      // const lightbox = await new SimpleLightbox('.test .gallery .photo-card a', { captionDelay: 250 });
-      // console.log(lightbox)
-      // console.log(2)
       const visibleBtn = loadMoreBtn.classList.add("is-visible");
       loadImagesCounter += imagesArray.data.hits.length;
 
-        // console.log(imagesArray.data.hits.length)
         if (imagesArray.data.hits.length === 0) {
             return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
         } else {
           Notiflix.Notify.success(`Hooray! We found ${imagesArray.data.totalHits} images.`);
         }
-        return list.insertAdjacentHTML("beforeend", itemList);
+      list.insertAdjacentHTML("beforeend", itemList);
+      return gallery = new SimpleLightbox('.gallery a');
     } catch (error) {
         console.log(error);
     }
-    // fetchImages(input.value).then(response => console.log(response));
 }
 
 function createImageCard(arr) {
@@ -77,10 +67,6 @@ function createImageCard(arr) {
 async function onLoadMoreBtnClick() {
     page += 1;
 
-    // if (page > 1) {
-    //     loadMoreBtn.classList.add("is-visible")
-    // }
-
     try {
         const imagesArray = await fetchImages(input.value);
       const itemList = await createImageCard(imagesArray.data.hits);
@@ -95,17 +81,3 @@ async function onLoadMoreBtnClick() {
     }
 }
 
-// let gallery = new SimpleLightbox('.photo-card a');
-// gallery.on('show.simplelightbox', function () {
-// 	// Do something…
-// });
-
-// function clickShveps (e) {
-//   e.preventDefault();
-
-//   // const gallery = await new SimpleLightbox('.photo-card a');
-//         gallery.on('show.simplelightbox', function () {
-// 	        // Do something…
-//           });
-// }
-// const lightbox = new SimpleLightbox('.test .gallery .photo-card a', { captionDelay: 250 });
