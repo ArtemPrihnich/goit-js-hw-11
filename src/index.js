@@ -7,7 +7,7 @@ import { fetchImages } from "./search";
 
 const form = document.querySelector("form");
 const input = document.querySelector("input");
-const btnSubmit = document.querySelector("button");
+// const btnSubmit = document.querySelector("button");
 const list = document.querySelector(".gallery");
 const loadMoreBtn = document.querySelector(".load-more")
 
@@ -28,10 +28,11 @@ async function onFormSubmit(e) {
     try {
         const imagesArray = await fetchImages(input.value);
       const itemList = await createImageCard(imagesArray.data.hits);
-      const visibleBtn = loadMoreBtn.classList.add("is-visible");
+      loadMoreBtn.classList.add("is-visible");
       loadImagesCounter += imagesArray.data.hits.length;
 
-        if (imagesArray.data.hits.length === 0) {
+      if (imagesArray.data.hits.length === 0) {
+          loadMoreBtn.classList.remove("is-visible");
             return Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again.');
         } else {
           Notiflix.Notify.success(`Hooray! We found ${imagesArray.data.totalHits} images.`);
@@ -68,16 +69,26 @@ async function onLoadMoreBtnClick() {
     page += 1;
 
     try {
-        const imagesArray = await fetchImages(input.value);
+      const imagesArray = await fetchImages(input.value);
       const itemList = await createImageCard(imagesArray.data.hits);
+
       loadImagesCounter += imagesArray.data.hits.length;
         if (loadImagesCounter >= imagesArray.data.totalHits) {
             loadMoreBtn.classList.remove("is-visible");
             Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
         }
-        return list.insertAdjacentHTML("beforeend", itemList);
+      list.insertAdjacentHTML("beforeend", itemList);
+      
+      const { height: cardHeight } = document
+        .querySelector(".gallery")
+        .firstElementChild.getBoundingClientRect();
+
+        // console.log(list.firstElementChild)
+        window.scrollBy({
+        top: cardHeight * 2,
+        behavior: "smooth",
+        });
     } catch (error) {
         console.log(error);
     }
 }
-
